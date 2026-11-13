@@ -206,7 +206,6 @@ export function LandingPage() {
             <img className="logo-full" src={brand.logo} alt="Monetra" width="123" height="30" />
           </a>
           <span>{t("foot")}</span>
-          <a href="/docs">{t("foot.api")}</a>
         </div>
       </footer>
 

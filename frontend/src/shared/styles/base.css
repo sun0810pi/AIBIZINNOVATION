@@ -296,3 +296,10 @@ html[data-input="mouse"] :focus-visible { outline: none; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   .js .reveal { opacity: 1; transform: none; }
 }
+
+/* Native <select> popups ignore translucent backgrounds: give options solid, readable colours in both themes. */
+select option, select optgroup { background-color: #ffffff; color: #13241c; }
+:root[data-theme="dark"] select option, :root[data-theme="dark"] select optgroup { background-color: #12261e; color: #f4f2ef; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) select option, :root:not([data-theme="light"]) select optgroup { background-color: #12261e; color: #f4f2ef; }
+}
