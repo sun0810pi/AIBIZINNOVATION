@@ -135,3 +135,5 @@
 .mo-rec { padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--mint) 14%, transparent); border: 1px solid color-mix(in srgb, var(--mint) 35%, transparent); display: grid; gap: 4px; }
 .mo-rec small { color: var(--ink-3); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
 .mo-rec b { font-size: 0.95rem; }
+:root[data-theme="dark"] .mo-tag { color: var(--mint); background: rgba(62, 207, 142, 0.16); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mo-tag { color: var(--mint); background: rgba(62, 207, 142, 0.16); } }

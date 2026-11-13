@@ -3,7 +3,7 @@ import { useI18n } from "@/shared/i18n";
 
 /** Hero visual: just Mo the otter. It breathes, changes expression on its own, leans toward the pointer,
  *  and hops to the next pose when clicked. No chart, no floating cards. */
-const POSES = ["wave", "idea", "laptop", "cheer", "happy", "jump", "headphones", "sit"] as const;
+const POSES = ["wave", "idea", "laptop", "cheer", "happy", "growth", "headphones", "sit"] as const;
 
 export function HeroMascot() {
   const { t } = useI18n();

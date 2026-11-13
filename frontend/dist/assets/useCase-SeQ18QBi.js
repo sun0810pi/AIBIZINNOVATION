@@ -1,0 +1,1 @@
+import{r as s}from"./base-C62b4Aaf.js";import{d as u}from"./app-DnCFKbE5.js";function i(){const{snapshot:o,refresh:r}=u(),[n,a]=s.useState(null);return s.useEffect(()=>{let e=!0;return r().catch(t=>e&&a(t instanceof Error?t:new Error(String(t)))),()=>{e=!1}},[r]),{snapshot:o,error:n,refresh:r}}export{i as u};

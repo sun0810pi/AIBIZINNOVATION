@@ -7,7 +7,7 @@ type Os = "ios" | "android";
 const ICON = "/brand/monetra-icon.svg";
 
 /** The public address the QR code opens on a phone. A QR made from localhost would be useless off this computer. */
-const SITE_URL = "https://monetra-peach.vercel.app/";
+const SITE_URL = "https://cashbridge-6qp4.onrender.com/";
 
 const SHARE = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -81,7 +81,7 @@ export function InstallGuide() {
           <aside className="install-qr">
             <QrCode text={SITE_URL} label={t("inst.scan")} />
             <p>{t("inst.scan")}</p>
-            <a className="qr-url mono" href={SITE_URL}>{new URL(SITE_URL).host}</a>
+            <span className="qr-url mono">{new URL(SITE_URL).host}</span>
           </aside>
         </div>
       </div>
