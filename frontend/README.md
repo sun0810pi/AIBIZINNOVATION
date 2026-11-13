@@ -1,4 +1,4 @@
-# CashBridge web client (React + TypeScript)
+# Monetra web client (React + TypeScript)
 
 The landing page, the SME workspace and the Bank review portal. It renders what the FastAPI backend computed and
 never calculates money itself.
@@ -51,8 +51,8 @@ Rules:
   motion, contrast) live in `localStorage` and change nothing on the server.
 * Interface text is in `shared/i18n/locales/{en,vi,zh}.json`. Engine output (findings, letters, evidence claims)
   stays English on purpose: it is part of the hashed record.
-* Styles are the original design system, unchanged (`shared/styles/*.css`): graphite and gold, system fonts, no
-  external requests, so the strict `Content-Security-Policy: default-src 'self'` still holds.
+* The shared forest-green and mint palette lives in `shared/styles/base.css`. Styles and fonts are served locally
+  under `Content-Security-Policy: default-src 'self'`.
 
 Adding a screen: create `features/<name>/` with `api.ts`, `<Name>Screen.tsx` and `index.ts`
 (`export { default } from "./<Name>Screen"`), then add one line to `features/workspace/screens.tsx` and, if it

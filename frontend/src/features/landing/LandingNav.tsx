@@ -36,7 +36,7 @@ interface Indicator {
 
 /**
  * Landing header: logo left, section links centred, language / theme / sign-in right.
- * - a gold underline slides from link to link as you scroll or click
+ * - an underline slides from link to link as you scroll or click
  * - a thin progress line along the bottom edge fills as you read down the page
  * - the bar shrinks and gains a shadow once the page scrolls
  * - below 960px the links move into a menu that slides open under the bar
@@ -101,9 +101,9 @@ export function LandingNav({ logo, mark, links, active, onNavigate, onSignIn }: 
   return (
     <header className={"nav on-navy" + (scrolled ? " scrolled" : "") + (open ? " menu-open" : "")}>
       <div className="wrap nav-row">
-        <a className="logo" href="#top" aria-label="CashBridge home" onClick={() => setOpen(false)}>
-          <img className="logo-full" src={logo} alt="CashBridge" width="178" height="38" />
-          <img className="logo-mark" src={mark} alt="" width="55" height="24" />
+        <a className="logo" href="#top" aria-label="Monetra home" onClick={() => setOpen(false)}>
+          <img className="logo-full" src={logo} alt="Monetra" width="155" height="38" />
+          <img className="logo-mark" src={mark} alt="" width="26" height="26" />
         </a>
         <nav className="nav-links" aria-label="Page sections" ref={linksEl}>
           {links.map((l) => (

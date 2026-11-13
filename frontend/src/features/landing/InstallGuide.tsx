@@ -4,7 +4,7 @@ import { QrCode } from "./QrCode";
 
 type Os = "ios" | "android";
 
-const ICON = "/brand/cashbridge-icon.svg";
+const ICON = "/brand/monetra-icon.svg";
 
 /** The public address the QR code opens on a phone. A QR made from localhost would be useless off this computer. */
 const SITE_URL = "https://cashbridge-6qp4.onrender.com/";
@@ -33,7 +33,7 @@ function guessOs(): Os {
 }
 
 /**
- * How to put CashBridge on a phone's home screen. Left: the steps. Right: a QR code that opens this site on the phone.
+ * How to put Monetra on a phone's home screen. Left: the steps. Right: a QR code that opens this site on the phone.
  * The "what to tap" chips are pictures of buttons on the phone, not buttons on this page.
  */
 export function InstallGuide() {
@@ -56,7 +56,7 @@ export function InstallGuide() {
             <div className="install-app">
               <img src={ICON} alt="" width="56" height="56" />
               <div>
-                <b>CashBridge</b>
+                <b>Monetra</b>
                 <p>{t("inst.desc")}</p>
               </div>
             </div>

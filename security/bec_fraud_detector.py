@@ -61,7 +61,7 @@ class BecResult(BaseModel):
             "sender": self.sender,
             "subject": self.subject,
             "reasons": self.reasons,
-            "action_hint": "Verify by phone using the number on file. CashBridge never changes payee details.",
+            "action_hint": "Verify by phone using the number on file. Monetra never changes payee details.",
         }
 
 

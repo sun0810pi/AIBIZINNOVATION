@@ -34,7 +34,7 @@ export function QrCode({ text, label }: Props) {
       {matrix ? (
         <svg viewBox={`${-quiet} ${-quiet} ${matrix.size + quiet * 2} ${matrix.size + quiet * 2}`} shapeRendering="crispEdges" aria-hidden="true">
           <rect x={-quiet} y={-quiet} width={matrix.size + quiet * 2} height={matrix.size + quiet * 2} fill="#ffffff" />
-          <path d={matrix.path} fill="#1d2125" />
+          <path d={matrix.path} fill="var(--forest)" />
         </svg>
       ) : null}
     </div>

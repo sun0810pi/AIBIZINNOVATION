@@ -141,7 +141,7 @@ def _scheduled(weeks: Sequence[Any], option: Any, schedule: Any, invoice_receipt
             ("Each expected receipt of the pledged invoice is replaced by its share of the factor's rebate "
              "(invoice minus advance, fee and interest to that day), so nothing is counted twice." if option.type == "factoring" else
              f"Loan repaid in one bullet on {schedule.expected_settlement_date.isoformat()} with interest for {schedule.days_financed} days."),
-            "Interest is charged for the days actually financed (Actual/365); the cost is CashBridge's internal annualised estimate, not a legal APR.",
+            "Interest is charged for the days actually financed (Actual/365); the cost is Monetra's internal annualised estimate, not a legal APR.",
             "The 13-week base forecast contains open invoices and confirmed orders (at shipment confidence); no unconfirmed sales.",
         ],
     }

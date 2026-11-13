@@ -189,7 +189,7 @@ def _setup(doc: Document, result: Dict[str, Any], lang: str) -> None:
     title = result["document"]["title"]
     props.title = f"{title['en']} {result['contract_no']} (UNSIGNED DRAFT)"
     props.subject = "Unsigned contract draft for legal review"
-    props.author = "CashBridge contract drafting (fixed clause library)"
+    props.author = "Monetra contract drafting (fixed clause library)"
     props.keywords = "DRAFT; NOT SIGNED; LEGAL REVIEW REQUIRED; SYNTHETIC DEMO"
     props.comments = "Generated from user-entered data. Not legal advice. Not signed."
     props.created = datetime.now(timezone.utc).replace(tzinfo=None)
@@ -423,9 +423,9 @@ def _review_page(doc: Document, result: Dict[str, Any], lang: str) -> None:
                 r2 = p.add_run("  /  " + texts[1])
                 r2.italic, r2.font.size, r2.font.color.rgb = True, Pt(9.5), MUTED
     _para(doc, after=8)
-    en_note = ("LEGAL REVIEW REQUIRED. NOT SIGNED. CashBridge does not give legal advice and does not sign documents; "
+    en_note = ("LEGAL REVIEW REQUIRED. NOT SIGNED. Monetra does not give legal advice and does not sign documents; "
                "a qualified lawyer must approve this draft before it is used.")
-    vi_note = ("BẮT BUỘC RÀ SOÁT PHÁP LÝ. CHƯA KÝ. CashBridge không tư vấn pháp lý và không ký văn bản; luật sư có chuyên môn phải "
+    vi_note = ("BẮT BUỘC RÀ SOÁT PHÁP LÝ. CHƯA KÝ. Monetra không tư vấn pháp lý và không ký văn bản; luật sư có chuyên môn phải "
                "phê duyệt bản dự thảo này trước khi sử dụng.")
     _notice(doc, {"en": [en_note], "vi": [vi_note, "LEGAL REVIEW REQUIRED · NOT SIGNED"], "bilingual": [vi_note, en_note]}[lang])
 

@@ -122,4 +122,4 @@ export const reconcileInvoice = (contractText: string, invoiceText: string) =>
   post<ReconcileResult>("/api/contracts/reconcile", { data: { contract_text: contractText, invoice_text: invoiceText } });
 export const draftContract = (data: DraftInput) => post<DraftResult>("/api/contracts/draft", { data: cleanDraft(data) });
 export const downloadDraftDocx = (data: DraftInput, contractNo?: string) =>
-  download("/api/contracts/draft-docx", `${contractNo || "CashBridge"}_UNSIGNED_DRAFT.docx`, { method: "POST", body: { data: cleanDraft(data) } });
+  download("/api/contracts/draft-docx", `${contractNo || "Monetra"}_UNSIGNED_DRAFT.docx`, { method: "POST", body: { data: cleanDraft(data) } });

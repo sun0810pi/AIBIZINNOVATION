@@ -7,6 +7,7 @@ import { demoLogin, fetchAuthConfig, passcodeLogin, type DemoAccount, type Login
 interface Props {
   open: boolean;
   portal: Portal;
+  mark: string;
   onPortal: (p: Portal) => void;
   onClose: () => void;
 }
@@ -18,7 +19,7 @@ function enter(session: LoginResponse) {
   window.location.href = "/app#" + home;
 }
 
-export function SignInDialog({ open, portal, onPortal, onClose }: Props) {
+export function SignInDialog({ open, portal, mark, onPortal, onClose }: Props) {
   const { t } = useI18n();
   const [accounts, setAccounts] = useState<DemoAccount[] | null>(null);
   const [loadError, setLoadError] = useState("");
@@ -100,10 +101,7 @@ export function SignInDialog({ open, portal, onPortal, onClose }: Props) {
           </div>
           <h2 id="authTitle">{t(`auth.${portal}.title`)}</h2>
           <p>{t(`auth.${portal}.lede`)}</p>
-          <svg className="auth-art" viewBox="0 0 300 120" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-            <path d="M10 96h60V70M290 96h-60V70M70 70c40-58 120-58 160 0" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-            <path d="M80 96v-14M110 96V62M150 96V52M190 96V62M220 96v-14" stroke="currentColor" strokeWidth="1.5" opacity=".5" />
-          </svg>
+          <img className="auth-art" src={mark} alt="" width="112" height="114" />
         </aside>
         <div className="auth-main">
           <button className="close" type="button" onClick={onClose} aria-label="Close sign-in">×</button>

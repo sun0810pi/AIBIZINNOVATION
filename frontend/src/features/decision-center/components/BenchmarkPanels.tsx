@@ -53,7 +53,7 @@ export function PlannerBenchmark({ b }: { b: Benchmark }) {
   );
 }
 
-/** How often the Director is disturbed: CashBridge's routing vs forwarding everything or a flat amount threshold. */
+/** How often the Director is disturbed: Monetra's routing vs forwarding everything or a flat amount threshold. */
 export function OperationsBenchmark({ b }: { b: Benchmark }) {
   const { t } = useI18n();
   const o = b.ops;
@@ -65,12 +65,12 @@ export function OperationsBenchmark({ b }: { b: Benchmark }) {
         items={[
           { label: t("ops.every"), value: ev.director_alerts, display: String(ev.director_alerts), cls: "cb-muted" },
           { label: t("ops.threshold"), value: th.director_alerts, display: String(th.director_alerts), cls: "cb-muted" },
-          { label: "CashBridge", value: cb.director_alerts, display: String(cb.director_alerts), cls: "cb-accent", strong: true },
+          { label: "Monetra", value: cb.director_alerts, display: String(cb.director_alerts), cls: "cb-accent", strong: true },
         ]}
       />
       <Scroll>
         <table>
-          <thead><tr><th></th><th>{t("ops.every")}</th><th>{t("ops.threshold")}</th><th>CashBridge</th></tr></thead>
+          <thead><tr><th></th><th>{t("ops.every")}</th><th>{t("ops.threshold")}</th><th>Monetra</th></tr></thead>
           <tbody>
             <tr><td>{t("ops.false")}</td><td>{ev.false_alerts}</td><td>{th.false_alerts}</td><td>{cb.false_alerts}</td></tr>
             <tr><td>{t("ops.missed")}</td><td>{ev.missed}</td><td>{th.missed}</td><td>{cb.missed}</td></tr>
@@ -86,7 +86,7 @@ export function OperationsBenchmark({ b }: { b: Benchmark }) {
             <table>
               <thead><tr><th></th><th>{t("ops.notif")}</th><th>{t("ops.false")}</th><th>{t("ops.missed")}</th></tr></thead>
               <tbody>
-                <tr><td><b>CashBridge</b></td><td>{cb.director_alerts}</td><td>{cb.false_alerts}</td><td>{cb.missed}</td></tr>
+                <tr><td><b>Monetra</b></td><td>{cb.director_alerts}</td><td>{cb.false_alerts}</td><td>{cb.missed}</td></tr>
                 <tr><td>{t("abl.noPlanCheck")}</td><td>{o.ablation.without_plan_in_force_check.director_alerts}</td><td>{o.ablation.without_plan_in_force_check.false_alerts}</td><td>{o.ablation.without_plan_in_force_check.missed}</td></tr>
                 <tr><td>{t("abl.noGroup")}</td><td>{o.ablation.without_grouping.director_alerts}</td><td>{o.ablation.without_grouping.false_alerts}</td><td>{o.ablation.without_grouping.missed}</td></tr>
               </tbody>

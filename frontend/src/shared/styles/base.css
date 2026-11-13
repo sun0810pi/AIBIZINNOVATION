@@ -1,34 +1,34 @@
-/* CashBridge design tokens and shared primitives: the single source of truth for colour, type, radius and motion.
- * Look: private-bank graphite and bronze-gold. Graphite header, white cards on a warm grey page, restrained gold accent,
- * 4-6px corners, hairline borders, one sans family. Fonts are self-hosted (imported in the entry files).
- *
- * Colour roles, kept apart on purpose:
- *   --chrome   dark graphite chrome (top bar, hero band, auth side panel)
- *   --brand    primary action (buttons): graphite in light, gold in dark
- *   --bridge   selection and data accent (active nav, focus, charts): bronze-gold
- *   --good / --deficit / --risk   status only, never decoration
+/* CashBridge design tokens and shared primitives.
+ * Forest green anchors the chrome, with mint surfaces and accents.
+ * --brand styles primary actions and --bridge styles selection, focus and charts.
  *
  * BACKGROUND: flat colour (--paper). To use a picture instead, drop a file in frontend/public/backdrop/ and set
  * --bg-image below, e.g.  --bg-image: url("/backdrop/app.jpg");  (landing page: --bg-image-land).
  */
 :root {
   color-scheme: light;
-  --paper: #f3f3f1;
-  --surface: #ffffff;
-  --surface-2: #f7f7f5;
-  --ink: #17191b;
-  --ink-2: #43484d;
-  --ink-3: #5f656b;
-  --rule: #d8d9d6;
-  --rule-soft: #e8e8e5;
+  --forest: #0b4f36;
+  --green: #0f6e4a;
+  --mint: #3ecf8e;
+  --mint-light: #d5f0e1;
+  --mint-white: #f4faf6;
 
-  --chrome: #1d2125;
-  --brand: #1d2125;
-  --brand-2: #3a4046;
-  --brand-ink: #ffffff;
-  --bridge: #7a5c14;
-  --bridge-ink: #ffffff;
-  --bridge-soft: #f4ecd8;
+  --paper: var(--mint-white);
+  --surface: #ffffff;
+  --surface-2: #edf7f0;
+  --ink: #142b22;
+  --ink-2: #2d5040;
+  --ink-3: #496857;
+  --rule: #c8ddd1;
+  --rule-soft: #e0eee6;
+
+  --chrome: var(--forest);
+  --brand: var(--forest);
+  --brand-2: var(--green);
+  --brand-ink: var(--mint-white);
+  --bridge: var(--green);
+  --bridge-ink: var(--mint-white);
+  --bridge-soft: var(--mint-light);
   --good: #1f7a4d;
   --good-soft: #e1f3e8;
   --deficit: #b3261e;
@@ -37,12 +37,12 @@
   --risk-soft: #fdebd3;
   --info: #4a5a85;
   --info-soft: #e9ecf5;
-  --inverse: #1d2125;
-  --inverse-ink: #f4f4f2;
-  --focus: #7a5c14;
+  --inverse: var(--forest);
+  --inverse-ink: var(--mint-white);
+  --focus: var(--green);
   --line: var(--rule);
   --card: var(--surface);
-  --s1: #1f6f6a; --s2: #a77d1f; --s3: #4b7a3d; --s4: #7b5ea7;
+  --s1: var(--forest); --s2: #378562; --s3: #3b7180; --s4: #7b5ea7;
 
   --bg-image: none;
   --bg-image-land: none;
@@ -56,8 +56,8 @@
   --r-m: 6px;
   --r-l: 8px;
   --r-pill: 6px;
-  --sh: 0 1px 2px rgba(16, 24, 40, 0.06);
-  --sh-2: 0 10px 30px rgba(16, 24, 40, 0.16);
+  --sh: 0 1px 2px rgba(13, 28, 22, 0.06);
+  --sh-2: 0 10px 30px rgba(13, 28, 22, 0.16);
 
   --step--1: 0.8125rem;
   --step-0: 0.9375rem;
@@ -73,42 +73,40 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --paper: #111314; --surface: #1a1d1f; --surface-2: #212528; --ink: #f4f4f2; --ink-2: #d0d2d3; --ink-3: #a3a7aa;
-    --rule: #34393d; --rule-soft: #272b2e;
-    --chrome: #25292d; --brand: #e0bd6a; --brand-2: #ecd08a; --brand-ink: #14110a;
-    --bridge: #e0bd6a; --bridge-ink: #14110a; --bridge-soft: #2e2a1d;
+    --paper: #0d1c16; --surface: #132820; --surface-2: #1a3429; --ink: var(--mint-white); --ink-2: var(--mint-light); --ink-3: #a6c4b2;
+    --rule: #315444; --rule-soft: #244436;
+    --brand: var(--mint); --brand-2: var(--mint-light); --brand-ink: var(--paper);
+    --bridge: var(--mint); --bridge-ink: var(--paper); --bridge-soft: #1b4130;
     --good: #5fcf94; --good-soft: #15301f; --deficit: #ff8f84; --deficit-soft: #3b1f1c; --risk: #ffa95c; --risk-soft: #38260f;
     --info: #a9b8e6; --info-soft: #252b40;
-    --inverse: #25292d; --inverse-ink: #f4f4f2; --focus: #e0bd6a;
-    --s1: #5cc4bd; --s2: #e0bd6a; --s3: #8fd07a; --s4: #b99be6;
+    --focus: var(--mint);
+    --s1: var(--mint); --s2: var(--mint-light); --s3: #78bac9; --s4: #b99be6;
     --sh: 0 1px 2px rgba(0, 0, 0, 0.4); --sh-2: 0 14px 40px rgba(0, 0, 0, 0.55);
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --paper: #111314; --surface: #1a1d1f; --surface-2: #212528; --ink: #f4f4f2; --ink-2: #d0d2d3; --ink-3: #a3a7aa;
-  --rule: #34393d; --rule-soft: #272b2e;
-  --chrome: #25292d; --brand: #e0bd6a; --brand-2: #ecd08a; --brand-ink: #14110a;
-  --bridge: #e0bd6a; --bridge-ink: #14110a; --bridge-soft: #2e2a1d;
+  --paper: #0d1c16; --surface: #132820; --surface-2: #1a3429; --ink: var(--mint-white); --ink-2: var(--mint-light); --ink-3: #a6c4b2;
+  --rule: #315444; --rule-soft: #244436;
+  --brand: var(--mint); --brand-2: var(--mint-light); --brand-ink: var(--paper);
+  --bridge: var(--mint); --bridge-ink: var(--paper); --bridge-soft: #1b4130;
   --good: #5fcf94; --good-soft: #15301f; --deficit: #ff8f84; --deficit-soft: #3b1f1c; --risk: #ffa95c; --risk-soft: #38260f;
   --info: #a9b8e6; --info-soft: #252b40;
-  --inverse: #25292d; --inverse-ink: #f4f4f2; --focus: #e0bd6a;
-  --s1: #5cc4bd; --s2: #e0bd6a; --s3: #8fd07a; --s4: #b99be6;
+  --focus: var(--mint);
+  --s1: var(--mint); --s2: var(--mint-light); --s3: #78bac9; --s4: #b99be6;
   --sh: 0 1px 2px rgba(0, 0, 0, 0.4); --sh-2: 0 14px 40px rgba(0, 0, 0, 0.55);
 }
 
-/* Chrome that sits on the dark graphite bar (top bar, landing nav, hero band, auth side panel): re-map the tokens so
- * every control inside just works. The same dark chrome is used in light and dark themes. */
+/* Use light text and controls on the forest-green chrome. */
 .on-navy {
   color-scheme: dark;
-  background: var(--chrome); color: #f4f4f2;
-  --ink: #ffffff; --ink-2: rgba(244, 244, 242, 0.85); --ink-3: rgba(244, 244, 242, 0.68);
+  background: var(--chrome); color: var(--ink);
+  --ink: var(--mint-white); --ink-2: var(--mint-light); --ink-3: #b2dfc9;
   --surface: rgba(255, 255, 255, 0.08); --surface-2: rgba(255, 255, 255, 0.12);
   --rule: rgba(255, 255, 255, 0.24); --rule-soft: rgba(255, 255, 255, 0.12);
-  --brand: #ffffff; --brand-2: #e8e8e5; --brand-ink: #1d2125;
-  --bridge: #e0bd6a; --bridge-ink: #14110a; --bridge-soft: rgba(224, 189, 106, 0.18);
-  --focus: #e0bd6a;
-  --logo-mark: #1d2125;
+  --brand: var(--mint-white); --brand-2: var(--mint-light); --brand-ink: var(--forest);
+  --bridge: var(--mint); --bridge-ink: var(--forest); --bridge-soft: color-mix(in srgb, var(--mint) 18%, transparent);
+  --focus: var(--mint);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -194,7 +192,7 @@ html[data-input="mouse"] :focus-visible { outline: none; }
 .seg button:hover, .lang button:hover { color: var(--ink); }
 .seg button.on, .seg button[aria-pressed="true"], .seg button[aria-selected="true"], .lang button[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); }
 
-.tip { position: fixed; z-index: 90; pointer-events: none; background: var(--chrome); color: #f2f6fb; border-radius: var(--r-s); padding: 6px 10px; font-size: var(--step--1); line-height: 1.4; max-width: 280px; white-space: pre-line; box-shadow: var(--sh-2); opacity: 0; transition: opacity 0.12s; }
+.tip { position: fixed; z-index: 90; pointer-events: none; background: var(--chrome); color: var(--inverse-ink); border-radius: var(--r-s); padding: 6px 10px; font-size: var(--step--1); line-height: 1.4; max-width: 280px; white-space: pre-line; box-shadow: var(--sh-2); opacity: 0; transition: opacity 0.12s; }
 .tip.on { opacity: 1; }
 
 /* ---------- motion: subtle, banking-appropriate ---------- */

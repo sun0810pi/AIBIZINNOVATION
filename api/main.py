@@ -271,7 +271,7 @@ def create_app(backend_provider: Callable[[], Any] = get_backend, dist_dir: Path
     runtime_mode.assert_safe_to_start()
     production = runtime_mode.is_production()
     # Interactive API docs are a demo convenience; production does not publish its route map.
-    app = FastAPI(title="CashBridge (SYNTHETIC demo)", version="2.0", docs_url=None if production else "/docs",
+    app = FastAPI(title="Monetra (SYNTHETIC demo)", version="2.0", docs_url=None if production else "/docs",
                   redoc_url=None if production else "/redoc", openapi_url=None if production else "/openapi.json")
     app.add_middleware(CORSMiddleware, allow_origins=_allowed_origins(), allow_methods=["GET", "POST"],
                        allow_headers=["Authorization", "Content-Type"], expose_headers=["Content-Disposition"])
@@ -581,7 +581,7 @@ def create_app(backend_provider: Callable[[], Any] = get_backend, dist_dir: Path
         raw = call(lambda b: draft_docx_bytes(body.data), refusal_status=422)
         return Response(content=raw,
                         media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        headers={'Content-Disposition': 'attachment; filename="CashBridge_UNSIGNED_DRAFT.docx"',
+                        headers={'Content-Disposition': 'attachment; filename="Monetra_UNSIGNED_DRAFT.docx"',
                                  'Cache-Control': 'no-store'})
 
     @app.post('/api/contracts/reconcile', tags=['intelligence'])
@@ -665,7 +665,7 @@ def create_app(backend_provider: Callable[[], Any] = get_backend, dist_dir: Path
             desk = EvidenceDesk(os.environ.get('CASHBRIDGE_WORKSPACE_DB', str(runtime_mode.runtime_dir(BASE_DIR) / 'workspace.sqlite3')))
             with desk.db() as con:
                 desk._notify(con, SME_TENANT, "bank", result["pack_id"], None,
-                             "The SME withdrew this pack. Stop processing it and delete copies held outside CashBridge.")
+                             "The SME withdrew this pack. Stop processing it and delete copies held outside Monetra.")
         except Exception:  # the withdrawal itself is already recorded in the audit chain
             pass
         try:  # uploaded evidence of a withdrawn pack is deleted (the request rows keep only the SHA-256 as the record)
@@ -1146,7 +1146,7 @@ def create_app(backend_provider: Callable[[], Any] = get_backend, dist_dir: Path
 
         @app.get("/", include_in_schema=False)
         def root() -> JSONResponse:
-            return JSONResponse({"app": "CashBridge (SYNTHETIC demo)", "ui": "missing: frontend/dist is the built web app; run `make web-build` (or restore it from the repository)", "docs": "/docs"})
+            return JSONResponse({"app": "Monetra (SYNTHETIC demo)", "ui": "missing: frontend/dist is the built web app; run `make web-build` (or restore it from the repository)", "docs": "/docs"})
 
     return app
 

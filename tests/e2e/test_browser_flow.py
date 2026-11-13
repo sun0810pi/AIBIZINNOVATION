@@ -149,7 +149,7 @@ def test_full_three_role_journey(server, browser):
     # ---- landing
     visitor = Page(browser, server)
     visitor.go("/")
-    assert "CashBridge" in visitor.page.title()
+    assert "Monetra" in visitor.page.title()
     visitor.shot("01_landing")
     visitor.close()
 

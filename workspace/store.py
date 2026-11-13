@@ -219,7 +219,7 @@ class EvidenceDesk:
                         "updated=?, evidence_file_id=?, viewed_version=NULL, viewed_by=NULL WHERE id=?",
                         (ref, sha, actor, self._now(), file_id, rid))
             self._log(con, rid, actor, 'sme_accountant', 'submitted', f'v{row["version"] + 1}: {ref} sha256 {sha[:12]}…'
-                      + (' · uploaded to the encrypted vault' if file_id else ' · file sent outside CashBridge') + (f' · {note}' if note else ''))
+                      + (' · uploaded to the encrypted vault' if file_id else ' · file sent outside Monetra') + (f' · {note}' if note else ''))
             self._notify(con, tenant, 'bank', case_id, rid, f'SME submitted {ref} for: {row["item"]}')
         return self.get(tenant, case_id, rid)
 

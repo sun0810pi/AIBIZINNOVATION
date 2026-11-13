@@ -38,7 +38,7 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
   try {
     response = await fetch(base() + path, { method: options.method ?? (body === undefined ? "GET" : "POST"), headers, body });
   } catch {
-    throw new ApiError(0, "The CashBridge server is not reachable. Start it with `make run`, or check VITE_API_BASE.");
+    throw new ApiError(0, "The Monetra server is not reachable. Start it with `make run`, or check VITE_API_BASE.");
   }
   if (response.status === 401 && session && !options.anonymous) clearSession();
   return response;

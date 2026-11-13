@@ -12,8 +12,8 @@ import { SignInDialog } from "./SignInDialog";
 
 /** Header and footer are light in the light theme and dark in the dark theme, so the logo has a version for each. */
 const BRAND = {
-  dark: { logo: "/brand/cashbridge-logo-dark-bg.svg", mark: "/brand/cashbridge-mark.svg" },
-  light: { logo: "/brand/cashbridge-logo-light-bg.svg", mark: "/brand/cashbridge-mark-light.svg" },
+  dark: { logo: "/brand/monetra-logo-dark-bg.svg", mark: "/brand/monetra-mark-dark.svg" },
+  light: { logo: "/brand/monetra-logo-light-bg.svg", mark: "/brand/monetra-mark-light.svg" },
 } as const;
 /** Stagger helper: item i of a group appears `step` ms after the one before it. */
 const delay = (i: number, step = 90) => ({ "--d": `${i * step}ms` }) as CSSProperties;
@@ -203,15 +203,15 @@ export function LandingPage() {
 
       <footer className="foot on-navy">
         <div className="wrap foot-row">
-          <a className="logo" href="#top" aria-label="CashBridge home">
-            <img src={brand.logo} alt="CashBridge" width="141" height="30" />
+          <a className="logo" href="#top" aria-label="Monetra home">
+            <img className="logo-full" src={brand.logo} alt="Monetra" width="123" height="30" />
           </a>
           <span>{t("foot")}</span>
           <a href="/docs">{t("foot.api")}</a>
         </div>
       </footer>
 
-      <SignInDialog open={authOpen} portal={portal} onPortal={setPortal} onClose={() => setAuthOpen(false)} />
+      <SignInDialog open={authOpen} portal={portal} mark={brand.mark} onPortal={setPortal} onClose={() => setAuthOpen(false)} />
       {signedOut && (
         <div role="status" className="toast show">
           {t("auth.signedOut")}
