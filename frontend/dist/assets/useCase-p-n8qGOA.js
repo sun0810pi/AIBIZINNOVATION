@@ -1,1 +1,0 @@
-import{r as s}from"./base-D1EWQybE.js";import{d as u}from"./app-CZX_3N3-.js";function i(){const{snapshot:o,refresh:r}=u(),[n,a]=s.useState(null);return s.useEffect(()=>{let e=!0;return r().catch(t=>e&&a(t instanceof Error?t:new Error(String(t)))),()=>{e=!1}},[r]),{snapshot:o,error:n,refresh:r}}export{i as u};

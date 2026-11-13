@@ -327,3 +327,12 @@ tr.int-err td { background: color-mix(in srgb, var(--deficit) 7%, transparent); 
 .linkish { border: 0; background: none; padding: 0; color: var(--green); font-weight: 600; text-decoration: underline; cursor: pointer; font: inherit; }
 @media (max-width: 1200px) { .int-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .int-grid { grid-template-columns: 1fr; } }
+
+/* ===== dark-mode legibility =====
+ * The glass chrome shows the green glow behind it; in dark mode the brightest blob sits right behind the top of the
+ * side bar and washed out the first menu items and group labels. A dark tint under the glass keeps text readable. */
+:root[data-theme="dark"] .side, :root[data-theme="dark"] .top { background: var(--g-fill), rgba(7, 23, 17, 0.72); }
+:root[data-theme="dark"] .side h4 { color: #a6c4b2; opacity: 1; }
+:root[data-theme="dark"] .side a:not([aria-current="page"]), :root[data-theme="dark"] .side .side-btn { color: #d5f0e1; }
+/* A disabled mint button at half opacity turned into dark-green-on-dark-green. Show it as a clear, flat "not yet" button. */
+:root[data-theme="dark"] .btn[disabled]:not(.ghost):not(.danger) { opacity: 1; background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.16); color: #8fae9d; }

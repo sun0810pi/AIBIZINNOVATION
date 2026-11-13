@@ -265,6 +265,20 @@ html[data-input="mouse"] :focus-visible { outline: none; }
 .seg button, .lang button { border: 0; background: none; font: inherit; font-size: var(--step--1); font-weight: 600; padding: 4px 11px; min-height: 28px; border-radius: var(--r-s); color: var(--ink-3); cursor: pointer; white-space: nowrap; transition: background-color 0.15s, color 0.15s; }
 .seg button:hover, .lang button:hover { color: var(--ink); }
 .seg button.on, .seg button[aria-pressed="true"], .seg button[aria-selected="true"], .lang button[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); }
+/* Language picker: globe + "EN ▾", opens a small menu. Looks like a quiet icon, not a button. */
+.lang-pick { position: relative; flex: none; }
+.lang-btn { display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 8px; border: 1px solid transparent; border-radius: var(--r-m); background: transparent; color: var(--ink-2); font: inherit; font-size: var(--step--1); font-weight: 600; cursor: pointer; transition: color 0.15s, background-color 0.15s; }
+.lang-btn:hover, .lang-pick.open .lang-btn { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.lang-btn svg { width: 17px; height: 17px; flex: none; }
+.lang-btn .lang-caret { width: 11px; height: 11px; opacity: 0.7; transition: transform 0.2s; }
+.lang-pick.open .lang-caret { transform: rotate(180deg); }
+.lang-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 60; min-width: 168px; display: grid; gap: 2px; padding: 5px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-m); box-shadow: var(--sh-2); animation: langIn 0.14s ease-out; }
+.lang-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--ink-2); font: inherit; font-size: var(--step--1); text-align: left; cursor: pointer; }
+.lang-menu button:hover, .lang-menu button:focus-visible { background: var(--surface-2); color: var(--ink); outline: none; }
+.lang-menu button[aria-checked="true"] { color: var(--ink); font-weight: 600; }
+.lang-menu button[aria-checked="true"]::after { content: ""; margin-left: auto; width: 9px; height: 5px; border-left: 2px solid var(--bridge); border-bottom: 2px solid var(--bridge); transform: rotate(-45deg) translateY(-2px); }
+.lang-code { min-width: 26px; font-weight: 600; color: var(--ink-3); }
+@keyframes langIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
 .tip { position: fixed; z-index: 90; pointer-events: none; background: var(--chrome); color: var(--inverse-ink); border-radius: var(--r-s); padding: 6px 10px; font-size: var(--step--1); line-height: 1.4; max-width: 280px; white-space: pre-line; box-shadow: var(--sh-2); opacity: 0; transition: opacity 0.12s; }
 .tip.on { opacity: 1; }
@@ -303,3 +317,4 @@ select option, select optgroup { background-color: #ffffff; color: #13241c; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) select option, :root:not([data-theme="light"]) select optgroup { background-color: #12261e; color: #f4f2ef; }
 }
+select option:disabled { color: #8aa395; }

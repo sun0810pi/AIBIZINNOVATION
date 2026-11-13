@@ -1,2 +1,11 @@
 .vercel
 .env*
+
+# Generated / local-only (never commit)
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+data/runtime/
+.DS_Store

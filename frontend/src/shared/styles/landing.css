@@ -46,21 +46,31 @@
 .logo img { display: block; height: 38px; width: auto; }
 .logo .logo-mark { display: none; height: 26px; }
 .nav-links { position: relative; display: flex; justify-content: center; gap: 4px; }
-.nav-ind { position: absolute; left: 0; bottom: 0; height: 2px; border-radius: 2px; background: var(--bridge); transition: transform 0.38s var(--ease), width 0.38s var(--ease), opacity 0.2s; pointer-events: none; }
-.nav-links a { white-space: nowrap; text-decoration: none; color: var(--ink-2); font-size: 0.92rem; font-weight: 500; letter-spacing: 0.005em; padding: 10px 14px; border-radius: var(--r-m) var(--r-m) 0 0; transition: background-color 0.15s, color 0.15s; }
-.nav-links a:hover { color: var(--ink); background: var(--surface-2); }
-.nav-links a[aria-current="true"] { color: var(--ink); }
-.nav-tools { display: flex; align-items: center; gap: 10px; }
+/* The one active signal: a green underline under the current section, inset to the text width. */
+.nav-ind { position: absolute; left: 0; bottom: -2px; height: 2px; border-radius: 2px; background: var(--bridge); transition: transform 0.38s var(--ease), width 0.38s var(--ease), opacity 0.2s; pointer-events: none; }
+.nav-links a { white-space: nowrap; text-decoration: none; color: var(--ink-2); font-size: 0.92rem; font-weight: 500; letter-spacing: 0.005em; padding: 8px 14px; border-radius: 999px; transition: background-color 0.15s, color 0.15s; }
+/* Hover only: a faint pill. The current link never gets the pill, so it is never a second "you are here". */
+.nav-links a:hover:not([aria-current="true"]) { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.nav-links a[aria-current="true"] { color: var(--ink); font-weight: 600; }
+/* Right side: [language · theme] as quiet icons, a gap, then Sign in. */
+.nav-tools { display: flex; align-items: center; gap: 16px; }
+.nav-prefs { display: flex; align-items: center; gap: 2px; }
+.nav-prefs .icon-btn { border-color: transparent; background: transparent; box-shadow: none; }
+.nav-prefs .icon-btn:hover { border-color: transparent; color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
 .nav-tools .btn.small { min-height: 36px; padding: 0 16px; }
+/* Sign in keeps its glow, toned down so it reads as the only button. */
+.land .nav-tools .btn.bridge { box-shadow: 0 2px 8px -3px color-mix(in srgb, var(--bridge) 45%, transparent); }
+.land .nav-tools .btn.bridge:hover { box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--bridge) 55%, transparent); }
 .nav.scrolled { box-shadow: 0 8px 24px rgba(13, 28, 22, 0.1); }
 .nav.on-navy { animation: navin 0.55s var(--ease) backwards; }
 .nav-row { transition: min-height 0.28s var(--ease); }
 .nav.scrolled .nav-row { min-height: 58px; }
 .logo img { transition: height 0.28s var(--ease); }
 .nav.scrolled .logo .logo-full { height: 32px; }
-.nav-progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--bridge); transform: scaleX(0); transform-origin: left; pointer-events: none; }
+/* Reading progress: moved to the very top edge, thin and faint, so it never meets the tab underline. */
+.nav-progress { position: absolute; left: 0; right: 0; top: 0; height: 1.5px; background: var(--bridge); opacity: 0.45; transform: scaleX(0); transform-origin: left; pointer-events: none; }
 .nav-burger, .nav-menu { display: none; }
-.nav .lang { background: transparent; }
+
 .nav .btn.ghost { background: transparent; }
 
 /* hero and stats strip share a green band */
@@ -283,7 +293,8 @@ code { font-family: var(--mono); font-size: 0.9em; background: var(--surface-2);
   .chart-notes { grid-template-columns: 1fr; }
   .stats.on-navy { grid-template-columns: 1fr; gap: 20px; }
   .stat { padding: 0; border-left: 0; }
-  .nav-tools .lang button { padding: 4px 8px; }
+  .nav-tools { gap: 8px; }
+  .lang-btn { padding: 0 6px; }
   .nav-tools .btn.small { padding: 0 12px; }
   /* phone-width header: show the mark */
   .nav .logo-full { display: none; }

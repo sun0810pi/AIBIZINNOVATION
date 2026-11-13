@@ -37,7 +37,7 @@ interface Indicator {
 /**
  * Landing header: logo left, section links centred, language / theme / sign-in right.
  * - an underline slides from link to link as you scroll or click
- * - a thin progress line along the bottom edge fills as you read down the page
+ * - a thin, faint progress line along the top edge fills as you read down the page
  * - the bar shrinks and gains a shadow once the page scrolls
  * - below 960px the links move into a menu that slides open under the bar
  */
@@ -75,7 +75,12 @@ export function LandingNav({ logo, mark, links, active, onNavigate, onSignIn }: 
   useLayoutEffect(() => {
     const measure = () => {
       const a = linksEl.current?.querySelector<HTMLElement>('a[aria-current="true"]');
-      setInd((prev) => (a ? { x: a.offsetLeft, w: a.offsetWidth, on: true, snap: !prev.on } : { ...prev, on: false }));
+      if (!a) return setInd((prev) => ({ ...prev, on: false }));
+      // Sit under the text, not the whole padded hit area.
+      const cs = getComputedStyle(a);
+      const pl = parseFloat(cs.paddingLeft) || 0;
+      const pr = parseFloat(cs.paddingRight) || 0;
+      setInd((prev) => ({ x: a.offsetLeft + pl, w: a.offsetWidth - pl - pr, on: true, snap: !prev.on }));
     };
     measure();
     void document.fonts?.ready.then(measure);
@@ -112,8 +117,10 @@ export function LandingNav({ logo, mark, links, active, onNavigate, onSignIn }: 
           <span className="nav-ind" aria-hidden="true" style={{ transform: `translateX(${ind.x}px)`, width: ind.w, opacity: ind.on ? 1 : 0, transition: ind.snap ? "opacity 0.2s" : undefined }} />
         </nav>
         <div className="nav-tools">
-          <LangSwitch />
-          <ThemeButton />
+          <div className="nav-prefs">
+            <LangSwitch />
+            <ThemeButton />
+          </div>
           <Button small variant="bridge" onClick={onSignIn}>{t("nav.signin")}</Button>
           <button type="button" className="icon-btn nav-burger" aria-expanded={open} aria-controls="nav-menu" aria-label={t("nav.menu")} onClick={() => setOpen((o) => !o)}>
             {open ? CLOSE : MENU}

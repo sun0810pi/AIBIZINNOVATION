@@ -42,15 +42,21 @@ function readPref<K extends PrefKey>(key: K): PrefValues[K] {
   return ((PREFS[key] as readonly string[]).includes(v ?? "") ? v : PREFS[key][0]) as PrefValues[K];
 }
 
+const systemDark = () => typeof window.matchMedia === "function" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
 function readTheme(): ThemeChoice {
   const v = store.get("cb.theme");
   return v === "light" || v === "dark" ? v : "system";
 }
 
+/**
+ * Always stamp the theme the screen actually shows, also for "system". Several dark-mode rules are written only as
+ * `:root[data-theme="dark"] ...`; leaving the attribute off in system mode silently dropped them on a dark OS.
+ * The choice itself ("system" or not) lives in storage, not on the element.
+ */
 function paintDocument(theme: ThemeChoice, prefs: PrefValues): void {
   const root = document.documentElement;
-  if (theme === "system") delete root.dataset.theme;
-  else root.dataset.theme = theme;
+  root.dataset.theme = theme === "system" ? (systemDark() ? "dark" : "light") : theme;
   for (const k of Object.keys(prefs) as PrefKey[]) root.dataset[k] = prefs[k];
 }
 
@@ -71,16 +77,15 @@ interface Preferences extends PrefValues {
 
 const Ctx = createContext<Preferences | null>(null);
 
-const systemDark = () => typeof window.matchMedia === "function" && window.matchMedia("(prefers-color-scheme: dark)").matches;
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemeChoice>(readTheme);
   const [prefs, setPrefs] = useState<PrefValues>(() => ({ view: readPref("view"), text: readPref("text"), motion: readPref("motion"), contrast: readPref("contrast") }));
-  const [, force] = useState(0);
+  const [osTick, force] = useState(0);
 
-  useEffect(() => paintDocument(theme, prefs), [theme, prefs]);
+  useEffect(() => paintDocument(theme, prefs), [theme, prefs, osTick]);
 
-  // "system" follows the OS: repaint the toggle icon when it changes.
+  // "system" follows the OS: repaint the document and the toggle icon when it changes.
   useEffect(() => {
     if (typeof window.matchMedia !== "function") return;
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -103,7 +108,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Preferences>(() => {
     const resolvedTheme = theme === "system" ? (systemDark() ? "dark" : "light") : theme;
     return { ...prefs, theme, resolvedTheme, setTheme, setPref, toggleTheme: () => setTheme(resolvedTheme === "dark" ? "light" : "dark") };
-  }, [prefs, theme, setTheme, setPref]);
+  }, [prefs, theme, setTheme, setPref, osTick]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
