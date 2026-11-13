@@ -31,8 +31,9 @@ function Overview({ s }: { s: CaseSnapshot }) {
   return (
     <>
       <PageHead title={t("ov.title")} lede={t("ov.lede")} />
-      <RoleStrip />
+      {/* Next step leads: on a phone the department flow below is ~800px tall and would push it off the first screen. */}
       <Panel title={t("ov.next")} className="primary"><NextStep s={s} /></Panel>
+      <RoleStrip />
       <WorkQueue s={s} director={can("sme:approve")} />
       <Kpis>
         <Kpi highlight label={t("ov.cash")} value={usd(k.cash_today_usd)} foot={t("ov.cashFoot")} />
