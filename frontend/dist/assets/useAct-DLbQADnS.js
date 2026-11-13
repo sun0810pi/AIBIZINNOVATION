@@ -1,0 +1,1 @@
+import{G as a,r as e,i as o,c as i,s as u}from"./base-C62b4Aaf.js";function l(){const s=a();return e.useCallback(async(n,r)=>{try{const t=await n();return r&&s(typeof r=="function"?r(t):r),t}catch(t){return o(t)?(i(),window.location.href=u(),null):(s(t instanceof Error?t.message:String(t),!0),null)}},[s])}export{l as u};

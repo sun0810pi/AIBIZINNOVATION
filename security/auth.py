@@ -51,11 +51,21 @@ ROLE_PERMISSIONS: Dict[str, FrozenSet[str]] = {
     "sme_accountant": frozenset({"sme:read", "sme:analyze", "sme:prepare", "demo:reset"}),
     "sme_director": frozenset({"sme:read", "sme:analyze", "sme:approve", "demo:reset"}),
     "bank_reviewer": frozenset({"bank:read", "bank:decide"}),
+    # Other departments only *report* what they hear (payment promises, purchases). They never see bank
+    # balances, the forecast or funding: "sme:report" opens the assistant check-in and their own updates.
+    "sme_sales": frozenset({"sme:report"}),
+    "sme_procurement": frozenset({"sme:report"}),
+    # HR reads CVs and plans hiring; it reports the hiring budget to finance like any other department.
+    "sme_hr": frozenset({"sme:hr", "sme:report"}),
 }
-ROLE_PORTAL = {"sme_accountant": "sme", "sme_director": "sme", "bank_reviewer": "bank"}
+ROLE_PORTAL = {"sme_accountant": "sme", "sme_director": "sme", "bank_reviewer": "bank",
+               "sme_sales": "sme", "sme_procurement": "sme", "sme_hr": "sme"}
 ROLE_LABEL = {
     "sme_accountant": "Chief accountant (preparer)",
     "sme_director": "Director (approver)",
+    "sme_sales": "Sales (reports customer payments)",
+    "sme_procurement": "Purchasing (reports purchases)",
+    "sme_hr": "HR (recruitment)",
     "bank_reviewer": "Credit reviewer",
 }
 
@@ -75,6 +85,13 @@ DEMO_ACCOUNTS: List[Dict[str, str]] = [
      "org": "Binh Duong Timberworks (SYNTHETIC)", "tenant_id": SME_TENANT, "passcode": "minh-demo-2026"},
     {"user_id": "sme.chen", "name": "Chen Wei 陈伟", "role": "sme_director", "initials": "CW",
      "org": "Binh Duong Timberworks (SYNTHETIC)", "tenant_id": SME_TENANT, "passcode": "chen-demo-2026"},
+    # Other departments: they report updates through the assistant; finance reviews them.
+    {"user_id": "sme.hung", "name": "Lê Văn Hùng", "role": "sme_sales", "initials": "LH",
+     "org": "Binh Duong Timberworks (SYNTHETIC)", "tenant_id": SME_TENANT, "passcode": "hung-demo-2026"},
+    {"user_id": "sme.mai", "name": "Phạm Thị Mai", "role": "sme_procurement", "initials": "PM",
+     "org": "Binh Duong Timberworks (SYNTHETIC)", "tenant_id": SME_TENANT, "passcode": "mai-demo-2026"},
+    {"user_id": "sme.ha", "name": "Đỗ Thu Hà", "role": "sme_hr", "initials": "ĐH",
+     "org": "Binh Duong Timberworks (SYNTHETIC)", "tenant_id": SME_TENANT, "passcode": "ha-demo-2026"},
     # Lender: Partner Factor (MOCK).
     {"user_id": "bank.lihua", "name": "Li Hua 李华", "role": "bank_reviewer", "initials": "LH",
      "org": "Partner Factor (MOCK lender)", "tenant_id": LENDER_TENANT, "passcode": "lihua-demo-2026"},

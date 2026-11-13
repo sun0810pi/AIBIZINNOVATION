@@ -17,6 +17,7 @@ import { PreferencesProvider, applyStoredPreferences } from "@/shared/preference
 import { ToastProvider, TooltipHost } from "@/shared/ui";
 import "@/shared/styles/base.css";
 import "@/shared/styles/app.css";
+import "@/shared/styles/app-glass.css";
 
 document.documentElement.classList.add("js");
 applyStoredPreferences();
@@ -26,7 +27,7 @@ trackInputModality();
 function Workspace() {
   const { user } = useAuth();
   return (
-    <SnapshotProvider enabled={user.portal === "sme"}>
+    <SnapshotProvider enabled={user.portal === "sme" && user.permissions.includes("sme:read")}>
       <WorkspaceApp />
     </SnapshotProvider>
   );

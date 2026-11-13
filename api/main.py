@@ -98,6 +98,53 @@ class GreenReviewBody(BaseModel):
     project_id: str
 
 
+class UpdateParseBody(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)
+    message_date: Optional[str] = Field(default=None, max_length=10)
+
+
+class UpdateSubmitBody(BaseModel):
+    change_type: str = Field(max_length=32)
+    subject_id: Optional[str] = Field(default=None, max_length=40)
+    proposed_date: Optional[str] = Field(default=None, max_length=10)
+    note: Optional[str] = Field(default=None, max_length=500)
+    counterparty: Optional[str] = Field(default=None, max_length=150)
+    amount_vnd: Optional[int] = None
+
+
+class CvTextBody(BaseModel):
+    text: str = Field(min_length=40, max_length=50000)
+
+
+class ContractBody(BaseModel):
+    cv_id: str = Field(max_length=20)
+    opening_id: Optional[str] = Field(default=None, max_length=20)
+    start_date: Optional[str] = Field(default=None, max_length=10)
+    salary_vnd: int = Field(gt=0, le=10_000_000_000)
+    probation_days: Optional[int] = Field(default=None, ge=0, le=365)
+    probation_pct: Optional[int] = Field(default=None, ge=0, le=100)
+    term_months: Optional[int] = Field(default=12, ge=0, le=60)
+
+
+class GsheetBody(BaseModel):
+    link: str = Field(min_length=20, max_length=500)
+
+
+class SampleBody(BaseModel):
+    name: str = Field(max_length=80)
+    kind: str = Field(default="excel", max_length=10)
+
+
+class CommitBody(BaseModel):
+    batch_id: str = Field(max_length=20)
+    skip_errors: bool = False
+
+
+class UpdateReviewBody(BaseModel):
+    accept: bool
+    note: Optional[str] = Field(default="", max_length=500)
+
+
 class AskBody(BaseModel):
     text: str
 
@@ -554,6 +601,110 @@ def create_app(backend_provider: Callable[[], Any] = get_backend, dist_dir: Path
     @app.post('/api/intelligence/decide-update', tags=['agentic'])
     def intelligence_decide(body: ModelDecisionBody, principal: Principal = Depends(sme("sme:approve"))) -> Dict[str, Any]:
         return call(lambda b: b.intelligence_decide_update(body.approve, principal.user_id, body.note))
+
+    # ------------------------------------------------ operational updates (assistant check-in)
+    @app.get('/api/updates/checkin', tags=['conversation'])
+    def updates_checkin(principal: Principal = Depends(sme_any("sme:read", "sme:report"))) -> Dict[str, Any]:
+        # Departments that only report see their own updates, never other people's.
+        only = None if principal.can("sme:read") else principal.user_id
+        return call(lambda b: b.updates_checkin(only_author=only, role=principal.role))
+
+    @app.post('/api/updates/parse', tags=['conversation'])
+    def updates_parse(body: UpdateParseBody, _: Principal = Depends(sme_any("sme:read", "sme:report"))) -> Dict[str, Any]:
+        return call(lambda b: b.updates_parse(body.text, body.message_date), refusal_status=422)
+
+    @app.post('/api/updates', tags=['conversation'])
+    def updates_submit(body: UpdateSubmitBody, principal: Principal = Depends(sme_any("sme:read", "sme:report"))) -> Dict[str, Any]:
+        return call(lambda b: b.updates_submit(body.model_dump(), principal.user_id), refusal_status=422)
+
+    @app.post('/api/updates/{update_id}/review', tags=['conversation'])
+    def updates_review(update_id: str, body: UpdateReviewBody, principal: Principal = Depends(sme("sme:prepare"))) -> Dict[str, Any]:
+        return call(lambda b: b.updates_review(update_id, body.accept, principal.user_id, body.note or ""))
+
+    # ------------------------------------------------ integrations: Excel / CSV / MISA / Google Sheets
+    @app.get('/api/integrations/status', tags=['integrations'])
+    def int_status(_: Principal = Depends(sme("sme:read"))) -> Dict[str, Any]:
+        return call(lambda b: b.int_status())
+
+    @app.post('/api/integrations/preview/file', tags=['integrations'])
+    async def int_preview_file(file: UploadFile = File(...), kind: str = Form("excel"), _: Principal = Depends(sme("sme:prepare"))) -> Dict[str, Any]:
+        raw = await file.read(3_000_001)
+        return call(lambda b: b.int_preview_file(file.filename or "", raw, kind), refusal_status=422)
+
+    @app.post('/api/integrations/preview/gsheet', tags=['integrations'])
+    def int_preview_gsheet(body: GsheetBody, _: Principal = Depends(sme("sme:prepare"))) -> Dict[str, Any]:
+        return call(lambda b: b.int_preview_gsheet(body.link), refusal_status=422)
+
+    @app.post('/api/integrations/preview/sample', tags=['integrations'])
+    def int_preview_sample(body: SampleBody, _: Principal = Depends(sme("sme:prepare"))) -> Dict[str, Any]:
+        return call(lambda b: b.int_preview_sample(body.name, body.kind), refusal_status=422)
+
+    @app.post('/api/integrations/misa/sync', tags=['integrations'])
+    def int_misa_sync(_: Principal = Depends(sme("sme:prepare"))) -> Dict[str, Any]:
+        return call(lambda b: b.int_misa_sync(), refusal_status=422)
+
+    @app.post('/api/integrations/commit', tags=['integrations'])
+    def int_commit(body: CommitBody, principal: Principal = Depends(sme("sme:prepare"))) -> Dict[str, Any]:
+        return call(lambda b: b.int_commit(body.batch_id, principal.user_id, body.skip_errors), refusal_status=422)
+
+    @app.get('/api/integrations/export/forecast.xlsx', tags=['integrations'])
+    def int_export(_: Principal = Depends(sme("sme:read"))) -> Response:
+        data = call(lambda b: b.int_forecast_xlsx(), refusal_status=503)
+        return Response(data, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        headers={"Content-Disposition": 'attachment; filename="Monetra_forecast.xlsx"'})
+
+    @app.get('/api/integrations/templates/{name}', tags=['integrations'])
+    def int_template(name: str, _: Principal = Depends(sme("sme:read"))) -> Response:
+        fname, data = call(lambda b: b.int_template(name))
+        mt = "text/csv; charset=utf-8" if fname.endswith(".csv") else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        return Response(data, media_type=mt, headers={"Content-Disposition": f'attachment; filename="{fname}"'})
+
+    # ------------------------------------------------ HR: CVs, scoring, budget, contracts
+    def _hr_mask(principal: Principal) -> bool:
+        return not principal.can("sme:hr")  # the Director sees scores and budget, not personal contact details
+
+    @app.get('/api/hr/overview', tags=['hr'])
+    def hr_overview(principal: Principal = Depends(sme_any("sme:hr", "sme:approve"))) -> Dict[str, Any]:
+        return call(lambda b: b.hr_overview(_hr_mask(principal)))
+
+    @app.post('/api/hr/cvs/upload', tags=['hr'])
+    async def hr_upload(file: UploadFile = File(...), principal: Principal = Depends(sme("sme:hr"))) -> Dict[str, Any]:
+        from contracts.extraction import MAX_UPLOAD_BYTES
+        raw = await file.read(MAX_UPLOAD_BYTES + 1)
+        return call(lambda b: b.hr_add_cv(file.filename or "", raw, principal.user_id), refusal_status=422)
+
+    @app.post('/api/hr/cvs/text', tags=['hr'])
+    def hr_text(body: CvTextBody, principal: Principal = Depends(sme("sme:hr"))) -> Dict[str, Any]:
+        return call(lambda b: b.hr_add_text(body.text, principal.user_id), refusal_status=422)
+
+    @app.delete('/api/hr/cvs/{cv_id}', tags=['hr'])
+    def hr_delete(cv_id: str, _: Principal = Depends(sme("sme:hr"))) -> Dict[str, Any]:
+        return call(lambda b: b.hr_remove(cv_id))
+
+    @app.get('/api/hr/cvs.csv', tags=['hr'])
+    def hr_csv(principal: Principal = Depends(sme_any("sme:hr", "sme:approve"))) -> Response:
+        data = call(lambda b: b.hr_export("csv", _hr_mask(principal)))
+        return Response(data, media_type="text/csv; charset=utf-8", headers={"Content-Disposition": 'attachment; filename="HR_master_CV.csv"'})
+
+    @app.get('/api/hr/cvs.xlsx', tags=['hr'])
+    def hr_xlsx(principal: Principal = Depends(sme_any("sme:hr", "sme:approve"))) -> Response:
+        data = call(lambda b: b.hr_export("xlsx", _hr_mask(principal)), refusal_status=503)
+        return Response(data, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        headers={"Content-Disposition": 'attachment; filename="HR_master_CV.xlsx"'})
+
+    @app.post('/api/hr/budget/submit', tags=['hr'])
+    def hr_budget_submit(principal: Principal = Depends(sme("sme:hr"))) -> Dict[str, Any]:
+        return call(lambda b: b.hr_submit_budget(principal.user_id), refusal_status=422)
+
+    @app.post('/api/hr/contract', tags=['hr'])
+    def hr_contract(body: ContractBody, _: Principal = Depends(sme("sme:hr"))) -> Dict[str, Any]:
+        return call(lambda b: b.hr_contract(body.model_dump()), refusal_status=422)
+
+    @app.post('/api/hr/contract.docx', tags=['hr'])
+    def hr_contract_docx(body: ContractBody, _: Principal = Depends(sme("sme:hr"))) -> Response:
+        data = call(lambda b: b.hr_contract(body.model_dump(), docx=True), refusal_status=422)
+        return Response(data, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        headers={"Content-Disposition": f'attachment; filename="HDLD_{body.cv_id}.docx"'})
 
     @app.post('/api/chat/explain-concept', tags=['conversation'])
     def explain_concept(body: ConceptBody, _: Principal = Depends(sme("sme:analyze"))) -> Dict[str, Any]:

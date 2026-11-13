@@ -17,7 +17,20 @@ def _require_ocr() -> None:
                          'or run the Docker image, which includes it')
 
 
-def extract_upload(filename: str, data: bytes) -> Dict[str, object]:
+def _ocr_lang(lang):
+    """Use the requested Tesseract languages only if they are installed; otherwise Tesseract's default."""
+    if not lang:
+        return None
+    try:
+        import pytesseract
+        have = set(pytesseract.get_languages(config=''))
+    except Exception:
+        return None
+    wanted = [x for x in lang.split('+') if x in have]
+    return '+'.join(wanted) or None
+
+
+def extract_upload(filename: str, data: bytes, lang=None) -> Dict[str, object]:
     if not data or len(data) > MAX_UPLOAD_BYTES:
         raise ValueError('File must be 1 byte to 5 MB')
     name = (filename or '').lower()
@@ -49,7 +62,7 @@ def extract_upload(filename: str, data: bytes) -> Dict[str, object]:
                     from PIL import Image
                     pix = page.get_pixmap(matrix=fitz.Matrix(1.5, 1.5), alpha=False)
                     if pix.width * pix.height > 14_000_000: raise ValueError('Page image too large')
-                    text = pytesseract.image_to_string(Image.frombytes('RGB', (pix.width, pix.height), pix.samples), timeout=12)
+                    text = pytesseract.image_to_string(Image.frombytes('RGB', (pix.width, pix.height), pix.samples), lang=_ocr_lang(lang), timeout=12)
                     method = 'pdf-ocr-local'
                 chunks.append(text)
             value = '\n'.join(chunks)
@@ -68,7 +81,7 @@ def extract_upload(filename: str, data: bytes) -> Dict[str, object]:
         try:
             with Image.open(io.BytesIO(data)) as im:
                 if im.width * im.height > 14_000_000: raise ValueError('Image too large')
-                value = pytesseract.image_to_string(im.convert('RGB'), timeout=12)
+                value = pytesseract.image_to_string(im.convert('RGB'), lang=_ocr_lang(lang), timeout=12)
             method = 'image-ocr-local'
         except ValueError: raise
         except (UnidentifiedImageError, OSError) as exc:

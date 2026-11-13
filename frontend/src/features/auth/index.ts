@@ -4,3 +4,4 @@ export { demoLogin, passcodeLogin, fetchAuthConfig } from "./api";
 export type { AuthConfig, DemoAccount, LoginResponse } from "./types";
 export { RoleStrip } from "./RoleStrip";
 export { UserCard } from "./UserCard";
+export { DEPARTMENTS, departmentOf, groupByDepartment } from "./departments";

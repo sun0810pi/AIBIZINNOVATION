@@ -135,6 +135,16 @@ class PermissionGatekeeper:
     def _decide_l2(payload: Dict[str, Any], human_approver: Optional[str], tool: str = ""):
         if tool == "propose_model_update":
             return Decision.ALLOWED, "proposal stored as pending; activation needs a named human", None
+        if tool == "propose_operational_update":
+            return Decision.ALLOWED, "update stored as pending review; the forecast does not change", None
+        if tool == "import_accounting_batch":
+            if human_approver:
+                return Decision.ALLOWED, f"accounting batch committed by {human_approver}", None
+            return Decision.BLOCKED, "an accounting import must be committed by a named person", None
+        if tool == "review_operational_update":
+            if human_approver:
+                return Decision.ALLOWED, f"operational update reviewed by {human_approver}", None
+            return Decision.BLOCKED, "an operational update must be reviewed by a named human", None
         if tool == "record_plan_decision":
             if human_approver:
                 return Decision.ALLOWED, f"plan decision recorded by {human_approver}", None

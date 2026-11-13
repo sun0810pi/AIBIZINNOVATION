@@ -41,6 +41,9 @@ from config.settings import Tier
 from schemas.agent_schemas import Decision
 from schemas.forecast_schemas import ForecastResult, ScenarioParams, to_contract
 from security import number_check
+from ui.operational_updates import OperationalUpdates
+from hr.recruiting import Recruiting, extract_cv_file
+from integrations.importer import Integrations, fetch_google_sheet, forecast_xlsx, read_table
 from security.audit_log import verify_chain
 
 SCENARIO_CONTROLS = {
@@ -89,6 +92,9 @@ class RealBackend:
         self._last_contract: Optional[Dict[str, Any]] = None
         self._last_autopilot: Optional[Dict[str, Any]] = None
         self._lender_review: Dict[str, Any] = self._empty_lender_review()
+        self._updates = OperationalUpdates()
+        self._hr = Recruiting()
+        self._int = Integrations()
         self._intel_dir = Path(self.coord.audit_path).parent.parent / "intelligence"
         self._last_plan: Optional[Dict[str, Any]] = None
         self._chain: Any = None
@@ -265,6 +271,109 @@ class RealBackend:
             'notice': 'READ-ONLY synthetic reviewer preview. Bank view requires a server-configured reviewer token; this is not production IAM, underwriting or a lending decision.'
         }
         return result
+
+    # ------------------------------------------------- operational updates (assistant check-in)
+    def updates_checkin(self, only_author: Optional[str] = None, role: Optional[str] = None) -> Dict[str, Any]:
+        c = self.coord
+        result = self._updates.checkin(self._all_invoices(), c.buyer_risk_rows(), self._meta().get("as_of"))
+        if role in ("sme_procurement", "sme_hr"):
+            result["questions"] = []  # purchasing reports purchases; customer invoices are not theirs to answer
+        items = self._updates.list()
+        if only_author:
+            items = [x for x in items if x["author"] == only_author]
+        result["updates"] = items[:30]
+        return result
+
+    def updates_parse(self, text: str, message_date: Optional[str]) -> Dict[str, Any]:
+        return self._updates.parse(text, self._all_invoices(), message_date or self._meta().get("as_of"))
+
+    def updates_submit(self, body: Dict[str, Any], author: str) -> Dict[str, Any]:
+        self.coord._gate("update_assistant", "propose_operational_update", Tier.L2_INTERNAL_WRITE,
+                         {"subject": body.get("subject_id"), "type": body.get("change_type"), "author": author})
+        return self._updates.submit(body, author, self._all_invoices())
+
+    def updates_review(self, update_id: str, accept: bool, reviewer: str, note: str = "") -> Dict[str, Any]:
+        self.coord._gate("finance_reviewer", "review_operational_update", Tier.L2_INTERNAL_WRITE,
+                         {"update_id": update_id, "accept": accept}, human_approver=reviewer)
+        return self._updates.review(update_id, accept, reviewer, note)
+
+    def _all_invoices(self) -> List[Dict[str, Any]]:
+        """Ledger invoices plus the ones committed from an accounting import (imports win on the same number)."""
+        merged = {str(x.get("invoice_id")): x for x in (self.coord.verification or [])}
+        merged.update({x["invoice_id"]: x for x in self._int.invoices()})
+        return list(merged.values())
+
+    # --------------------------------------------------------------- integrations (accounting data in / out)
+    def int_status(self) -> Dict[str, Any]:
+        return self._int.status()
+
+    def int_preview_file(self, filename: str, data: bytes, kind: str) -> Dict[str, Any]:
+        rows = read_table(filename, data)
+        return self._int.stage(rows, filename[:120], kind if kind in ("excel", "misa") else "excel", self.coord.verification or [])
+
+    def int_preview_gsheet(self, link: str, opener=None) -> Dict[str, Any]:
+        rows = read_table("sheet.csv", fetch_google_sheet(link, opener))
+        return self._int.stage(rows, "Google Sheets", "gsheet", self.coord.verification or [])
+
+    def int_preview_sample(self, name: str, kind: str) -> Dict[str, Any]:
+        fname, data = self._int.sample(name)
+        return self._int.stage(read_table(fname, data), fname, kind, self.coord.verification or [])
+
+    def int_misa_sync(self) -> Dict[str, Any]:
+        """MISA sync over the same pipeline. Source: the sandbox ledger file (recorded as such in the batch)."""
+        fname, data = self._int.sample("misa_so_cong_no_mau.xlsx")
+        rows = read_table(fname, data)
+        if any(x.get("invoice_id") == "HD0001245" for x in self._int.invoices()):
+            for r in rows:  # second sync: the customer has paid part of HD0001245 since the last one
+                if len(r) > 10 and r[2] == "HD0001245":
+                    r[9], r[10] = 85_000_000, 100_000_000
+        return self._int.stage(rows, "MISA AMIS (sandbox)", "misa", self.coord.verification or [])
+
+    def int_commit(self, batch_id: str, actor: str, skip_errors: bool) -> Dict[str, Any]:
+        self.coord._gate("import_agent", "import_accounting_batch", Tier.L2_INTERNAL_WRITE,
+                         {"batch": batch_id, "skip_errors": skip_errors}, human_approver=actor)
+        return self._int.commit(batch_id, actor, skip_errors)
+
+    def int_forecast_xlsx(self) -> bytes:
+        return forecast_xlsx(self.get_snapshot())
+
+    def int_template(self, name: str):
+        return self._int.sample(name)
+
+    # --------------------------------------------------------------- HR (recruitment)
+    def hr_overview(self, mask: bool) -> Dict[str, Any]:
+        return self._hr.overview(mask)
+
+    def hr_add_cv(self, filename: str, data: bytes, actor: str) -> Dict[str, Any]:
+        out = extract_cv_file(filename, data)
+        cv = self._hr.add(out["text"], filename, out["method"])
+        self.coord._gate("hr_assistant", "read_cv", Tier.L1_ANALYZE, {"cv": cv["cv_id"], "method": out["method"], "by": actor})
+        return cv
+
+    def hr_add_text(self, text: str, actor: str) -> Dict[str, Any]:
+        cv = self._hr.add(text, "paste", "text")
+        self.coord._gate("hr_assistant", "read_cv", Tier.L1_ANALYZE, {"cv": cv["cv_id"], "method": "paste", "by": actor})
+        return cv
+
+    def hr_remove(self, cv_id: str) -> Dict[str, Any]:
+        self._hr.remove(cv_id)
+        return {"removed": cv_id}
+
+    def hr_export(self, kind: str, mask: bool) -> bytes:
+        return self._hr.xlsx_bytes(mask) if kind == "xlsx" else self._hr.csv_bytes(mask)
+
+    def hr_contract(self, body: Dict[str, Any], docx: bool = False) -> Any:
+        return self._hr.contract_docx(body) if docx else self._hr.contract(body)
+
+    def hr_submit_budget(self, actor: str) -> Dict[str, Any]:
+        b = self._hr.budget()
+        if not b["rows"]:
+            raise ValueError("No open positions: nothing to send")
+        seats = sum(r["seats"] for r in b["rows"])
+        return self.updates_submit({"change_type": "HIRING_PLAN", "amount_vnd": b["monthly_vnd"], "proposed_date": b["earliest_start"],
+                                    "counterparty": f"Recruitment plan: {seats} hires",
+                                    "note": "; ".join(f"{r['title_en']} x{r['seats']} from {r['start_month']}" for r in b["rows"])
+                                            + f". First year {b['first_year_vnd']:,} VND incl. one-off {b['one_off_vnd']:,} VND."}, actor)
 
     # --------------------------------------------------------------- snapshot
     def get_snapshot(self) -> Dict[str, Any]:
@@ -1161,6 +1270,9 @@ class RealBackend:
         self._last_error = None
         self._last_autopilot = None
         self._lender_review = self._empty_lender_review()
+        self._updates.reset()
+        self._hr.reset()
+        self._int.reset()
         self.coord.reset()
         self._reset_intelligence()
         self._chat = [self._briefing()]

@@ -34,7 +34,7 @@ export function WorkQueue({ s, director }: { s: CaseSnapshot; director: boolean 
       ) : (
         <>
           {/* The accountant's main job first, so it is on the first screen even on a phone. */}
-          <Tile label={t("wq.prepare")} n={readyToPrepare} href="#autopilot" icon={ICON.pack} foot={t("wq.prepareF")} />
+          <Tile label={t("wq.prepare")} n={readyToPrepare} href="#mo-autopilot" icon={ICON.pack} foot={t("wq.prepareF")} />
           <Tile label={t("wq.exceptions")} n={exceptions} href="#evidence" icon={ICON.check} foot={t("wq.exceptionsF")} />
           <Tile label={t("wq.unmatched")} n={unmatched} href="#evidence" icon={ICON.bank} foot={t("wq.unmatchedF")} />
           <Tile label={t("wq.held")} n={s.alerts.length} href="#evidence" icon={ICON.inbox} foot={t("wq.heldF")} />

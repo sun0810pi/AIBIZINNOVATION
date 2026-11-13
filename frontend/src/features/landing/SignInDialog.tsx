@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { saveSession, type Portal } from "@/shared/api/session";
 import { useI18n } from "@/shared/i18n";
 import { Button } from "@/shared/ui";
-import { demoLogin, fetchAuthConfig, passcodeLogin, type DemoAccount, type LoginResponse } from "../auth";
+import { demoLogin, fetchAuthConfig, groupByDepartment, homeRoute, passcodeLogin, type DemoAccount, type LoginResponse } from "../auth";
 
 interface Props {
   open: boolean;
@@ -15,7 +15,7 @@ interface Props {
 /** After signing in, open the workspace on the screen that suits the role. */
 function enter(session: LoginResponse) {
   saveSession({ token: session.token, user: session.user, expires_at: session.expires_at });
-  const home = session.user.portal === "bank" ? "inbox" : session.user.role === "sme_director" ? "core/decide" : "overview";
+  const home = session.user.role === "sme_director" ? "core/decide" : homeRoute(session.user);
   window.location.href = "/app#" + home;
 }
 
@@ -117,14 +117,19 @@ export function SignInDialog({ open, portal, mark, onPortal, onClose }: Props) {
             ) : accounts.length === 0 ? (
               <p className="muted">{t("auth.off")}</p>
             ) : list.length ? (
-              list.map((a) => (
-                <button key={a.user_id} type="button" className="acc" data-user={a.user_id} onClick={() => void quick(a.user_id)}>
-                  <span className="av" aria-hidden="true">{a.initials}</span>
-                  <span className="acc-text">
-                    <b>{a.name}</b>
-                    <span className="acc-sub"><span className="role-badge">{t("role." + a.role)}</span><span className="meta">{a.org}</span></span>
-                  </span>
-                </button>
+              groupByDepartment(list).map(({ dept, people }) => (
+                <div key={dept.id} className="acc-group">
+                  <h4>{t("dept." + dept.id)} <span>{t("dept." + dept.id + ".does")}</span></h4>
+                  {people.map((a) => (
+                    <button key={a.user_id} type="button" className="acc" data-user={a.user_id} onClick={() => void quick(a.user_id)}>
+                      <span className="av" aria-hidden="true">{a.initials}</span>
+                      <span className="acc-text">
+                        <b>{a.name}</b>
+                        <span className="acc-sub"><span className="role-badge">{t("role." + a.role)}</span><span className="meta">{a.org}</span></span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
               ))
             ) : (
               <p className="muted">Demo accounts are switched off on this server. Use the passcode form.</p>

@@ -6,6 +6,9 @@ type Screen = LazyExoticComponent<ComponentType<ScreenProps>>;
 /** One entry per screen. Each feature is its own lazy chunk, so a role only downloads the screens it opens. */
 export const SCREENS: Record<string, Screen> = {
   overview: lazy(() => import("../overview")),
+  updates: lazy(() => import("../my-updates")),
+  hiring: lazy(() => import("../hiring")),
+  integrations: lazy(() => import("../integrations")),
   autopilot: lazy(() => import("../autopilot")),
   core: lazy(() => import("../decision-center")),
   cash: lazy(() => import("../cash-forecast")),

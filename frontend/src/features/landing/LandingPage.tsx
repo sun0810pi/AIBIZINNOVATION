@@ -5,7 +5,7 @@ import { useI18n } from "@/shared/i18n";
 import { usePreferences } from "@/shared/preferences";
 import { AnimatedNumber, Button } from "@/shared/ui";
 import { fetchTrustSummary } from "./api";
-import { HeroCashChart } from "./HeroCashChart";
+import { HeroMascot } from "./HeroMascot";
 import { InstallGuide } from "./InstallGuide";
 import { LandingNav } from "./LandingNav";
 import { SignInDialog } from "./SignInDialog";
@@ -110,7 +110,6 @@ export function LandingPage() {
         <section className="hero-wrap" id="top">
           <div className="hero wrap">
             <div className="hero-copy on-navy">
-              <p className="kicker rise">{t("hero.kicker")}</p>
               <h1 className="rise d1">{t("hero.title")}</h1>
               <p className="lede rise d2">{t("hero.lede")}</p>
               <div className="cta rise d3">
@@ -119,7 +118,7 @@ export function LandingPage() {
               </div>
               <p className="fineprint rise d3">{t("hero.fine")}</p>
             </div>
-            <HeroCashChart />
+            <HeroMascot />
           </div>
           <div className="stats on-navy wrap rise d4">
             {stats.map((x, i) => (

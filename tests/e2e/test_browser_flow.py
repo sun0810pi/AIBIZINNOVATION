@@ -427,7 +427,7 @@ def test_each_roles_next_action_is_on_the_first_screen(server, browser, viewport
     acc = Page(browser, server, viewport=viewport)
     acc.demo_sign_in("sme.lan")
     # The React overview leads with a "Next step" card; the work-queue tile follows. Either link to the Autopilot counts.
-    assert on_first_screen(acc, '#page a[href="#autopilot"]'), "accountant: the way to prepare funding is not on the first screen"
+    assert on_first_screen(acc, '#page a[href="#mo-autopilot"]'), "accountant: the way to prepare funding is not on the first screen"
     acc.shot(f"16_first_screen_accountant_{viewport['width']}")
     acc.route("autopilot")
     acc.page.click("#apRun")

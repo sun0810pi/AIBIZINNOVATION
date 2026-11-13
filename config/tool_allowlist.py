@@ -33,6 +33,7 @@ TOOL_TIERS: Dict[str, Tier] = {
     "score_buyer_risk": Tier.L1_ANALYZE,
     "plan_liquidity": Tier.L1_ANALYZE,
     "simulate_outcome": Tier.L1_ANALYZE,
+    "read_cv": Tier.L1_ANALYZE,
     # L2: internal writes
     "ledger_write": Tier.L2_INTERNAL_WRITE,
     "lock_period": Tier.L2_INTERNAL_WRITE,
@@ -42,6 +43,11 @@ TOOL_TIERS: Dict[str, Tier] = {
     "propose_model_update": Tier.L2_INTERNAL_WRITE,
     "activate_model_update": Tier.L2_INTERNAL_WRITE,
     "record_plan_decision": Tier.L2_INTERNAL_WRITE,
+    # L2 operational updates from the assistant chat: proposed by a person, reviewed by a different person
+    "propose_operational_update": Tier.L2_INTERNAL_WRITE,
+    "review_operational_update": Tier.L2_INTERNAL_WRITE,
+    # L2 accounting import: a named person commits a validated batch; nothing is written to the source system
+    "import_accounting_batch": Tier.L2_INTERNAL_WRITE,
     # L3: leaves the system, OTP from the Director every time
     "submit_pack": Tier.L3_EXTERNAL,
     "send_email": Tier.L3_EXTERNAL,
@@ -85,6 +91,14 @@ TOOL_ALLOWLIST: Dict[str, FrozenSet[str]] = {
     "intelligence_core": frozenset({"plan_liquidity", "simulate_outcome", "propose_model_update"}),
     # The SME's human model owner (the Director in the demo) activates or rejects a proposal.
     "model_owner": frozenset({"activate_model_update", "record_plan_decision"}),
+    # Mo, the assistant: records what a person reported as a proposal. It cannot review or apply it.
+    "update_assistant": frozenset({"parse_reply", "propose_operational_update"}),
+    # Import agent: stages and commits accounting files a person checked. It never writes back to MISA.
+    "import_agent": frozenset({"import_accounting_batch"}),
+    # HR assistant: reads and scores CVs. It never sends offers or signs anything.
+    "hr_assistant": frozenset({"read_cv"}),
+    # The finance reviewer (a named human) accepts or rejects a proposed update.
+    "finance_reviewer": frozenset({"review_operational_update"}),
 }
 
 

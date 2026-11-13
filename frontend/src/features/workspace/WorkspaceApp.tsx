@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/shared/i18n";
 import { useAuth, homeRoute } from "../auth";
-import { AssistantDrawer } from "../assistant";
+import { MascotAssistant } from "../assistant";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { LoadingSkeleton } from "@/shared/ui";
 import { Sidebar } from "./Sidebar";
@@ -24,15 +24,29 @@ export function WorkspaceApp() {
   const arg = target === route.name ? route.arg : undefined;
   const Screen = SCREENS[target];
 
-  // A bare or forbidden hash falls back to the role's home screen.
+  // "#mo-autopilot" (old Autopilot links) asks Mo to run it in the chat, then returns to the last screen.
+  const last = useRef(home);
   useEffect(() => {
+    if (route.name === "mo-autopilot") {
+      window.dispatchEvent(new CustomEvent("mo:run", { detail: "autopilot" }));
+      window.location.replace("#" + last.current);
+      return;
+    }
     if (route.name !== target) window.location.replace("#" + home);
+    else last.current = target;
   }, [route.name, target, home]);
 
   useEffect(() => {
     main.current?.focus({ preventScroll: true });
     setMenuOpen(false);
   }, [target, arg]);
+
+  // Any screen can open Mo by dispatching "mo:open" (screens never import the assistant directly).
+  useEffect(() => {
+    const open = () => setAssistantOpen(true);
+    window.addEventListener("mo:open", open);
+    return () => window.removeEventListener("mo:open", open);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -43,7 +57,7 @@ export function WorkspaceApp() {
 
   return (
     <>
-      <Topbar onAssistant={() => setAssistantOpen(true)} onMenu={() => setMenuOpen((o) => !o)} menuOpen={menuOpen} />
+      <Topbar onAssistant={() => setAssistantOpen((o) => !o)} onMenu={() => setMenuOpen((o) => !o)} menuOpen={menuOpen} />
       <div className="shell">
         <Sidebar current={target === "case" ? "inbox" : target} open={menuOpen} onNavigate={() => setMenuOpen(false)} />
         {menuOpen && <div className="side-scrim" onClick={() => setMenuOpen(false)} />}
@@ -55,7 +69,7 @@ export function WorkspaceApp() {
           </ErrorBoundary>
         </main>
       </div>
-      {user.portal === "sme" && <AssistantDrawer open={assistantOpen} onClose={() => setAssistantOpen(false)} />}
+      {user.portal === "sme" && <MascotAssistant open={assistantOpen} onOpen={() => setAssistantOpen(true)} onClose={() => setAssistantOpen(false)} />}
     </>
   );
 }

@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 COPY requirements.txt requirements-ml.txt requirements-chain.txt ./
 RUN pip install --no-cache-dir -r requirements-ml.txt \
-    && apt-get update && apt-get install -y --no-install-recommends tesseract-ocr \
+    && apt-get update && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-vie \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . .

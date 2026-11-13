@@ -22,7 +22,7 @@ export function NextStep({ s }: { s: CaseSnapshot }) {
     <>
       <p className="next">{t(nextKey)}</p>
       <div className="row mt-2">
-        <a className="btn bridge" href={toFunding ? "#funding" : "#autopilot"}>{t(toFunding ? "btn.openFunding" : "btn.openAutopilot")}</a>
+        <a className="btn bridge" href={toFunding ? "#funding" : "#mo-autopilot"}>{t(toFunding ? "btn.openFunding" : "btn.openAutopilot")}</a>
       </div>
       <h3 className="mini">{t("ov.activity")}</h3>
       <ul className="activity">

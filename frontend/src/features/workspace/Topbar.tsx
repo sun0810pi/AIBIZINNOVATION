@@ -17,13 +17,14 @@ export function Topbar({ onAssistant, onMenu, menuOpen }: { onAssistant: () => v
   }, [portalName]);
 
   return (
-    <header className="top on-navy">
+    <header className="top glass">
       <button type="button" className="icon-btn burger" aria-label={t("app.menu")} aria-expanded={menuOpen} aria-controls="side" onClick={onMenu}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
       </button>
       <a className="logo" href="/?stay=1" aria-label="Monetra home">
-        <img className="logo-full" src="/brand/monetra-logo-dark-bg.svg" alt="Monetra" width="135" height="33" />
-        <img className="logo-mark" src="/brand/monetra-mark-dark.svg" alt="" width="26" height="26" />
+        <img className="logo-full on-light" src="/brand/monetra-logo-light-bg.svg" alt="Monetra" width="135" height="33" />
+        <img className="logo-full on-dark" src="/brand/monetra-logo-dark-bg.svg" alt="" width="135" height="33" />
+        <img className="logo-mark" src="/brand/monetra-icon.svg" alt="" width="28" height="28" />
       </a>
       <span className={"portal-tag" + (bank ? " bank" : "")}>{portalName}</span>
       <div className="top-right">

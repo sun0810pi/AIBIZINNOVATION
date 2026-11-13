@@ -1,1 +1,1 @@
-export { AssistantDrawer } from "./AssistantDrawer";
+export { MascotAssistant } from "./MascotAssistant";
